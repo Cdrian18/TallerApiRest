@@ -1,0 +1,456 @@
+openapi: 3.0.0
+info:
+  title: API Gestión de Usuarios
+  description: API REST para la gestión de usuarios, incluyendo operaciones CRUD, autenticación y recuperación de contraseña.
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8000
+    description: Servidor local
+
+security:
+  - bearerAuth: []
+
+paths:
+  /users:
+    get:
+      summary: Listar todos los usuarios
+      description: Retorna una lista con todos los usuarios registrados en el sistema, con paginación.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            title: Página
+        - name: users_per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            default: 10
+            title: Usuarios por página
+        - name: timestamp
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+                format: date-time
+            title: Timestamp
+      responses:
+        '200':
+          description: Lista de usuarios obtenida con éxito.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  page:
+                    type: integer
+                  total_pages:
+                    type: integer
+                  total_users:
+                    type: integer
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PublicUser'
+        '401':
+          description: No autorizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Crear un nuevo usuario
+      description: Crea un nuevo usuario en el sistema.
+      requestBody:
+        description: Datos del usuario a crear
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Usuario creado exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicUser'
+        '400':
+          description: Datos inválidos proporcionados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Nombre de usuario o correo electrónico ya existen.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{public_id}:
+    get:
+      summary: Obtener detalles de un usuario
+      description: Retorna los detalles de un usuario específico.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: public_id
+          required: true
+          schema:
+            type: string
+            description: ID del usuario a obtener.
+      responses:
+        '200':
+          description: Detalles del usuario obtenidos con éxito.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicUser'
+        '400':
+          description: Solicitud inválida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No autorizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Actualizar un usuario existente
+      description: Actualiza la información de un usuario específico.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: public_id
+          required: true
+          schema:
+            type: string
+            description: ID del usuario a actualizar.
+      requestBody:
+        description: Datos actualizados del usuario
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicUser'
+        '400':
+          description: Datos inválidos proporcionados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No autorizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Nombre de usuario o correo electrónico ya existen.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Eliminar un usuario
+      description: Elimina un usuario específico del sistema.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: public_id
+          required: true
+          schema:
+            type: string
+            description: ID del usuario a eliminar.
+      responses:
+        '204':
+          description: Usuario eliminado exitosamente.
+        '400':
+          description: Solicitud inválida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: No autorizado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /login:
+    post:
+      summary: Autenticar un usuario
+      description: Autentica a un usuario y retorna un token JWT si las credenciales son correctas.
+      requestBody:
+        description: Credenciales de usuario
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Autenticación exitosa.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Token JWT de autenticación.
+        '400':
+          description: Solicitud inválida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Credenciales inválidas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /password:
+    post:
+      summary: Recuperar clave de usuario
+      description: Envía instrucciones para recuperar la contraseña a la dirección de correo del usuario.
+      requestBody:
+        description: Correo electrónico del usuario
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecoverRequest'
+      responses:
+        '200':
+          description: Instrucciones enviadas al correo.
+        '400':
+          description: Solicitud inválida.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Restablecer contraseña
+      description: Restablece la contraseña de un usuario usando un token de recuperación.
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+            description: Token de recuperación
+        - name: new_password
+          in: query
+          required: true
+          schema:
+            type: string
+            description: Nueva contraseña
+      responses:
+        '200':
+          description: Contraseña restablecida exitosamente.
+        '400':
+          description: Token inválido o solicitud incorrecta.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      description: Bearer token usando JWT
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      required:
+        - username
+        - password
+        - email
+      properties:
+        id:
+          type: string
+          description: Identificador único del usuario.
+        username:
+          type: string
+          minLength: 3
+          description: Nombre de usuario, debe ser único.
+        password:
+          type: string
+          minLength: 8
+          description: Contraseña del usuario.
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario.
+        created_at:
+          type: string
+          format: date-time
+          description: Fecha de creación del usuario.
+
+    PublicUser:
+      type: object
+      properties:
+        public_id:
+          type: string
+          description: Identificador único del usuario.
+        username:
+          type: string
+          description: Nombre de usuario.
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario.
+        created_at:
+          type: string
+          format: date-time
+          description: Fecha de creación del usuario.
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Nombre de usuario.
+        password:
+          type: string
+          minLength: 8
+          description: Contraseña del usuario.
+
+    RecoverRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          description: Correo electrónico registrado del usuario.
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Código de estado HTTP.
+        message:
+          type: string
+          description: Descripción del error.
+        details:
+          type: string
+          description: Detalles adicionales sobre el error.
