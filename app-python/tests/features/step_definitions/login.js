@@ -4,7 +4,7 @@ const assert = require('assert');
 
 let response; // Variable para almacenar la respuesta del servicio
 
-When('invoco al servicio login', async function () {
+When('hago una solicitud POST a /login', async function () {
   try {
     response = await axios.post('http://localhost:8000/login', {
       "username": "Adrian1234",
