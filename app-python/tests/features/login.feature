@@ -1,8 +1,6 @@
 Feature: La API de usuarios permite la atennticacion de un usuario registrado
   Scenario: Como usuario puedo autenticarme y acceder a las funcionalidades
-    Given tengo las siguientes credenciales de usuario
-      | username   | password           |
-      | Adrian1234 | StrongPassword184! |
+    Given soy un usuario registrado con datos validos
     When hago una solicitud POST a /login
     Then obtengo un status 200
     And un token de autenticacion
