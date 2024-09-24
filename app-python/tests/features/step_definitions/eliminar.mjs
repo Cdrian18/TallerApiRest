@@ -6,7 +6,7 @@ import { expect } from 'chai';
 // Enviar solicitud DELETE para eliminar la cuenta del usuario
 When('hago una solicitud DELETE a {string} acompañada de la id de mi usuario', async function(endpoint) {
     try {
-        const fullEndpoint = `http://localhost:8000${endpoint}${this.userId}`;
+        const fullEndpoint = `${this.apiUrl}${endpoint}${this.userId}`;
         this.response = await axios.delete(fullEndpoint, {
             headers: { Authorization: `Bearer ${this.authToken}` } // Incluimos el token en la cabecera
         });
@@ -17,7 +17,7 @@ When('hago una solicitud DELETE a {string} acompañada de la id de mi usuario', 
 
 When('hago una solicitud DELETE a {string}', async function(endpoint) {
     try {
-        const fullEndpoint = `http://localhost:8000${endpoint}${'6c48cde4-5cbd-4474-b327-89e2d6181b9e'}`;
+        const fullEndpoint = `${this.apiUrl}${endpoint}${'6c48cde4-5cbd-4474-b327-89e2d6181b9e'}`;
         this.response = await axios.delete(fullEndpoint, {
             headers: { Authorization: `Bearer ${this.authToken}` }
         });
@@ -30,7 +30,7 @@ When('hago una solicitud DELETE a {string}', async function(endpoint) {
 Then('mi cuenta debería haber sido eliminada del sistema', async function() {
     try {
         // Intentar autenticarse con el usuario eliminado
-        const authResponse = await axios.post('http://localhost:8000/login', {
+        const authResponse = await axios.post(`${this.apiUrl}/login`, {
             username: this.credentials.username,
             password: this.credentials.password
         });

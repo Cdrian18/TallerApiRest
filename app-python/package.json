@@ -15,7 +15,8 @@
   "devDependencies": {
     "@cucumber/cucumber": "^11.0.0",
     "axios": "^1.7.7",
-    "chai": "^5.1.1"
+    "chai": "^5.1.1",
+    "cucumber-junit": "^1.7.1"
   },
   "dependencies": {
     "@faker-js/faker": "^9.0.1",

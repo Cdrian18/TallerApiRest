@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 // Paso When: Hacer una solicitud GET a "/users"
 When('hago una solicitud GET a {string}', async function (endpoint) {
-    const url = `http://localhost:8000${endpoint}`;
+    const url = `${this.apiUrl}${endpoint}`;
 
     try {
         this.response = await axios.get(url, {

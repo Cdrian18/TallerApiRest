@@ -12,7 +12,7 @@ Given('tengo las siguientes credenciales incorrectas:', function (dataTable) {
 
 When('hago una solicitud POST a \\/login', async function () {
   try {
-    this.response = await axios.post('http://localhost:8000/login', {
+    this.response = await axios.post(`${this.apiUrl}/login`, {
       "username": "Adrian12345",
       "password": "StrongPassword123!"
     });
@@ -23,7 +23,7 @@ When('hago una solicitud POST a \\/login', async function () {
 
 When('hago una solicitud POST a {string} con estas credenciales', async function (endpoint) {
   try {
-      this.response = await axios.post(`http://localhost:8000${endpoint}`, this.credentials);
+      this.response = await axios.post(`${this.apiUrl}${endpoint}`, this.credentials);
   } catch (error) {
       this.response = error.response || error;
   }

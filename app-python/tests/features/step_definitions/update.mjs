@@ -9,7 +9,7 @@ When('hago una solicitud de actualizacion de datos', async function () {
         email: this.email,
         password: this.credentials.password
     };
-    const url = `http://localhost:8000/users/${this.userId}`;  // Usar el ID del usuario autenticado
+    const url = `${this.apiUrl}/users/${this.userId}`;  // Usar el ID del usuario autenticado
 
     try {
         this.response = await axios.put(url, this.requestData, {
@@ -29,7 +29,7 @@ When('hago una solicitud de actualizacion de datos a {string}', async function (
         email: this.email,
         password: this.credentials.password
     };
-    const url = `http://localhost:8000${endpoint}`;
+    const url = `${this.apiUrl}${endpoint}`;
 
     try {
         this.response = await axios.put(url, this.requestData, {
@@ -48,7 +48,7 @@ When('hago una solicitud PUT a {string}', async function (endpoint) {
         email: this.email,
         password: this.credentials.password
     };
-    const url = `http://localhost:8000${endpoint}`;
+    const url = `${this.apiUrl}${endpoint}`;
     try {
         this.response = await axios.put(url, this.requestData, {
             headers: {

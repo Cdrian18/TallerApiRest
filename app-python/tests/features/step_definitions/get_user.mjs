@@ -13,7 +13,7 @@ addFormats(ajv);
 When('hago una solicitud GET a {string} acompañada de mi id publica', async function (endpoint) {
     try {
         const userId = this.userId;  // Obtener el ID público del usuario autenticado
-        const url = `http://localhost:8000${endpoint}${userId}`;  // Construir la URL con el ID
+        const url = `${this.apiUrl}${endpoint}${userId}`;  // Construir la URL con el ID
 
         this.response = await axios.get(url, {
             headers: {
@@ -28,7 +28,7 @@ When('hago una solicitud GET a {string} acompañada de mi id publica', async fun
 When('hago una solicitud GET buscando la id de otro usuario a {string}', async function (endpoint) {
     try {
         const otherUserId = '189fd7ab-28de-488a-b717-77d851468284';  // Aquí debes pasar la ID del otro usuario
-        const url = `http://localhost:8000${endpoint}${otherUserId}`;
+        const url = `${this.apiUrl}${endpoint}${otherUserId}`;
         this.response = await axios.get(url, {
             headers: {
                 Authorization: `Bearer ${this.authToken}`,  // Usa el token autenticado del usuario actual

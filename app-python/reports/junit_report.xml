@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<testsuite failures="0" skipped="0" name="cucumber-js" time="9.376407565000001" tests="15">
+  <testcase classname="La API de usuarios permite la creación y registro de un usuario nuevo" name="Crear un usuario exitosamente" time="0.42583459799999995">
+    <system-out><![CDATA[Given Tengo los datos correspondientes al username, email y password de...passed
+When hago una solicitud POST a "/users" con estos datos...................passed
+Then la respuesta debería tener un código de estado 201...................passed
+And la respuesta debería incluir los detalles del nuevo usuario...........passed]]></system-out>
+  </testcase>
+  <testcase classname="La API de usuarios permite la creación y registro de un usuario nuevo" name="Intentar crear un usuario con datos inválidos" time="0.035211398">
+    <system-out><![CDATA[Given Tengo los datos invalidos correspondientes al username, email y p...passed
+When hago una solicitud POST a "/users" con estos datos...................passed
+Then la respuesta debería tener un código de estado 409...................passed
+And la respuesta debería incluir un mensaje de error......................passed]]></system-out>
+  </testcase>
+  <testcase classname="La API permite que el usuario autenticado pueda eliminarse" name="Eliminar mi cuenta exitosamente" time="0.535662499">
+    <system-out><![CDATA[Given soy un usuario autenticado con un token valido......................passed
+When hago una solicitud DELETE a "/users/" acompañada de la id de mi us...passed
+Then la respuesta debería tener un código de estado 204...................passed
+And mi cuenta debería haber sido eliminada del sistema....................passed]]></system-out>
+  </testcase>
+  <testcase classname="La API permite que el usuario autenticado pueda eliminarse" name="Intentar eliminar la cuenta de otro usuario" time="0.5081025979999999">
+    <system-out><![CDATA[Given soy un usuario autenticado con un token valido......................passed
+When hago una solicitud DELETE a "/users/"................................passed
+Then la respuesta debería tener un código de estado 403...................passed
+And la respuesta debería incluir un "Acceso denegado".....................passed]]></system-out>
+  </testcase>
+  <testcase classname="Obtener detalles de un usuario" name="Obtener detalles del usuario exitosamente" time="0.528960498">
+    <system-out><![CDATA[Given soy un usuario autenticado con un token valido......................passed
+When hago una solicitud GET a "/users/" acompañada de mi id publica.......passed
+Then la respuesta debería tener un código de estado 200...................passed
+And la respuesta debería incluir los detalles de mi usuario...............passed]]></system-out>
+  </testcase>
+  <testcase classname="Obtener detalles de un usuario" name="Intentar obtener detalles de otro usuario" time="0.490117096">
+    <system-out><![CDATA[Given soy un usuario autenticado con un token valido......................passed
+When hago una solicitud GET buscando la id de otro usuario a "/users/"....passed
+Then la respuesta debería tener un código de estado 403...................passed
+And la respuesta debería incluir un "Acceso denegado".....................passed]]></system-out>
+  </testcase>
+  <testcase classname="La API de usuarios permite la atennticacion de un usuario registrado" name="Como usuario puedo autenticarme y acceder a las funcionalidades" time="0.491491899">
+    <system-out><![CDATA[Given soy un usuario registrado con datos validos.........................passed
+When hago una solicitud POST a /login.....................................passed
+Then obtengo un status 200................................................passed
+And un token de autenticacion.............................................passed]]></system-out>
+  </testcase>
+  <testcase classname="La API de usuarios permite la atennticacion de un usuario registrado" name="Intentar autenticar con credenciales incorrectas" time="0.006910299000000001">
+    <system-out><![CDATA[Given tengo las siguientes credenciales incorrectas:......................passed
+When hago una solicitud POST a "/login" con estas credenciales............passed
+Then la respuesta debería tener un código de estado 401...................passed
+And la respuesta debería incluir un "Credenciales incorrectas"............passed]]></system-out>
+  </testcase>
+  <testcase classname="La API permite enviar un correo de recuperación para la contraseña" name="Enviar instrucciones para recuperar contraseña" time="3.841614597">
+    <system-out><![CDATA[Given soy un usuario registrado con datos validos.........................passed
+When hago una solicitud POST a "/password" con este correo................passed
+Then la respuesta debería tener un código de estado 200...................passed
+And la respuesta debería incluir un "Se ha enviado un correo con las in...passed]]></system-out>
+  </testcase>
+  <testcase classname="La API permite enviar un correo de recuperación para la contraseña" name="Intentar restablecer contraseña con un token inválido" time="0.03294999600000001">
+    <system-out><![CDATA[Given tengo un correo no registrado "user111118@example.com"..............passed
+When hago una solicitud POST a "/password" con este correo................passed
+Then la respuesta debería tener un código de estado 404...................passed
+And la respuesta debería incluir un "Correo no registrado"................passed]]></system-out>
+  </testcase>
+  <testcase classname="La API permite que el usuario autenticado actualice sus datos" name="Actualizar mi cuenta exitosamente" time="0.642174898">
+    <system-out><![CDATA[Given soy un usuario autenticado con un token valido......................passed
+When hago una solicitud de actualizacion de datos.........................passed
+Then la respuesta debería tener un código de estado 200...................passed
+And los detalles de mi cuenta deberían actualizarse correctamente.........passed]]></system-out>
+  </testcase>
+  <testcase classname="La API permite que el usuario autenticado actualice sus datos" name="Intentar actualizar la cuenta de otro usuario" time="0.6223588979999999">
+    <system-out><![CDATA[Given soy un usuario autenticado con un token valido......................passed
+When hago una solicitud de actualizacion de datos a "/users/d06bbc3a-36...passed
+Then la respuesta debería tener un código de estado 403...................passed
+And la respuesta debería incluir un "Acceso denegado".....................passed]]></system-out>
+  </testcase>
+  <testcase classname="La API permite que el usuario autenticado actualice sus datos" name="Intentar actualizar una cuenta que no existe" time="0.6654775960000001">
+    <system-out><![CDATA[Given soy un usuario autenticado con un token valido......................passed
+When hago una solicitud PUT a "/users/123456789"..........................passed
+Then la respuesta debería tener un código de estado 403...................passed
+And la respuesta debería incluir un "Acceso denegado".....................passed]]></system-out>
+  </testcase>
+  <testcase classname="La API de usuarios permite a un usuario registrado observar la lista de usuarios" name="Como usuario autenticado puedo acceder a la lista de usuarios registrados" time="0.544069398">
+    <system-out><![CDATA[Given soy un usuario autenticado con un token valido......................passed
+When hago una solicitud GET a "/users"....................................passed
+Then obtengo un status 200................................................passed
+And una lista de usuarios.................................................passed]]></system-out>
+  </testcase>
+  <testcase classname="La API de usuarios permite a un usuario registrado observar la lista de usuarios" name="Intentar listar usuarios sin estar autenticado" time="0.005471297">
+    <system-out><![CDATA[When hago una solicitud GET a "/users"....................................passed
+Then la respuesta debería tener un código de estado 401...................passed
+And la respuesta debería incluir un "Could not validate credentials"......passed]]></system-out>
+  </testcase>
+</testsuite>

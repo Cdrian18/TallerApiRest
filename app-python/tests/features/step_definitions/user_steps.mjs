@@ -7,6 +7,7 @@ import { faker } from '@faker-js/faker';
 // Crear un nuevo constructor para el World
 class CustomWorld {
     constructor() {
+        this.apiUrl = process.env.API_URL || 'http://localhost:8000';
         this.response = null;
         this.requestData = {};
         this.apiEndpoint = '';
@@ -53,7 +54,7 @@ Before(function() {
 });
 
 Given('el endpoint {string} está disponible', async function (endpoint) {
-    this.apiEndpoint = `http://localhost:8000${endpoint}`;
+    this.apiEndpoint = `${this.apiUrl}${endpoint}`;
 });
 
 // Crear un nuevo usuario antes de la prueba
@@ -69,10 +70,10 @@ Given('soy un usuario autenticado con un token valido', async function() {
         this.credentials = {username: newUser.username, password: newUser.password};
 
         // Crear usuario
-        const createResponse = await axios.post('http://localhost:8000/users', newUser);
+        const createResponse = await axios.post(`${this.apiUrl}/users`, newUser);
 
         // Autenticarse con el nuevo usuario
-        const authResponse = await axios.post('http://localhost:8000/login', {
+        const authResponse = await axios.post(`${this.apiUrl}/login`, {
             username: newUser.username,
             password: newUser.password
         });
@@ -100,7 +101,7 @@ Given('soy un usuario registrado con datos validos', async function() {
         this.credentials = {username: newUser.username, password: newUser.password};
 
         // Crear usuario
-        const createResponse = await axios.post('http://localhost:8000/users', newUser);
+        const createResponse = await axios.post(`${this.apiUrl}/users`, newUser);
 
         this.userId = createResponse.data.public_id;
         this.email = newUser.email;
@@ -124,7 +125,7 @@ When('envío una solicitud POST con los siguientes datos:', async function (data
 // Enviar solicitud POST con los datos definidos en el Given
 When('hago una solicitud POST a {string} con estos datos', async function (endpoint) {
     try {
-        this.response = await axios.post(`http://localhost:8000${endpoint}`, this.requestData);
+        this.response = await axios.post(`${this.apiUrl}${endpoint}`, this.requestData);
     } catch (error) {
         this.response = error.response || error;
     }
