@@ -7,8 +7,8 @@ Feature: La API de usuarios permite la atennticacion de un usuario registrado
 
   Scenario: Intentar autenticar con credenciales incorrectas
     Given tengo las siguientes credenciales incorrectas:
-      | username  | password  |
-      | wronguser | wrongpass |
+      | username | wronguser |
+      | password | wrongpass |
     When hago una solicitud POST a "/login" con estas credenciales
     Then la respuesta debería tener un código de estado 401
-    And la respuesta debería incluir un mensaje "Credenciales inválidas"
+    And la respuesta debería incluir un "Credenciales incorrectas"

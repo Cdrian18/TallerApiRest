@@ -33,4 +33,3 @@ build/
 .vscode/
 
 node_modules/
-app-python/cucumber.js
