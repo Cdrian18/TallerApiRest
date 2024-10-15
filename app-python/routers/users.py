@@ -6,6 +6,7 @@ from utils.auth import get_current_user
 from schemas.user import User, PublicUser
 from schemas.error import ErrorResponse
 from utils.database import user_collection, user_helper
+from utils.logs import send_log
 
 router = APIRouter()
 
@@ -34,6 +35,12 @@ async def list_users(
     next_page = f"{base_url}?page={page + 1}&users_per_page={users_per_page}" if page < total_pages else None
     previous_page = f"{base_url}?page={page - 1}&users_per_page={users_per_page}" if page > 1 else None
 
+    send_log(
+        log_type="INFO",
+        module="UserModule",
+        summary="Lista de usuarios solicitada",
+        description=f"El usuario {current_user.username} solicitó la lista de usuarios, página {page}."
+    )
     
     return {
         "page": page,
@@ -50,6 +57,12 @@ async def list_users(
 async def read_user(public_id: str, current_user: PublicUser = Depends(get_current_user)):
     
     if current_user.public_id != public_id:
+        send_log(
+            log_type="WARNING",
+            module="UserModule",
+            summary="Acceso denegado",
+            description=f"El usuario {current_user.username} intentó acceder a los datos del usuario {public_id} sin permiso."
+        )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=ErrorResponse(
@@ -61,6 +74,12 @@ async def read_user(public_id: str, current_user: PublicUser = Depends(get_curre
     
     user = await user_collection.find_one({"public_id": public_id})
     if user is None:
+        send_log(
+            log_type="WARNING",
+            module="UserModule",
+            summary="Usuario no encontrado",
+            description=f"El usuario con ID {public_id} no fue encontrado."
+        )
         raise HTTPException(
             status_code=404,
             detail=ErrorResponse(
@@ -69,12 +88,26 @@ async def read_user(public_id: str, current_user: PublicUser = Depends(get_curre
                 details="No se encontró ningún usuario con el ID proporcionado."
             ).model_dump(),
         )
+        
+    send_log(
+        log_type="INFO",
+        module="UserModule",
+        summary="Usuario leído correctamente",
+        description=f"El usuario {current_user.username} accedió a los datos de {public_id}."
+    )
+    
     return user_helper(user)
 
 @router.put("/users/{public_id}", response_model=PublicUser)
 async def update_user(public_id: str, user: User, current_user: PublicUser = Depends(get_current_user)):
     # Verificar si el usuario autenticado está intentando actualizar sus propios datos
     if current_user.public_id != public_id:
+        send_log(
+            log_type="WARNING",
+            module="UserModule",
+            summary="Intento de actualización no autorizado",
+            description=f"El usuario {current_user.username} intentó actualizar los datos de {public_id} sin permisos."
+        )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=ErrorResponse(
@@ -87,6 +120,12 @@ async def update_user(public_id: str, user: User, current_user: PublicUser = Dep
     # Buscar el usuario por el public_id
     existing_user = await user_collection.find_one({"public_id": public_id})
     if existing_user is None:
+        send_log(
+            log_type="WARNING",
+            module="UserModule",
+            summary="Usuario no encontrado",
+            description=f"No se encontró ningún usuario con el ID {public_id} para actualizar."
+        )
         raise HTTPException(
             status_code=404,
             detail=ErrorResponse(
@@ -104,7 +143,14 @@ async def update_user(public_id: str, user: User, current_user: PublicUser = Dep
 
     if update_result.modified_count == 1:
         updated_user = await user_collection.find_one({"public_id": public_id})
+        
         if updated_user:
+            send_log(
+                log_type="INFO",
+                module="UserModule",
+                summary="Usuario actualizado correctamente",
+                description=f"El usuario con ID {public_id} ha sido actualizado por {current_user.username}."
+            )
             return user_helper(updated_user)
     
     return user_helper(existing_user)
@@ -113,6 +159,12 @@ async def update_user(public_id: str, user: User, current_user: PublicUser = Dep
 async def delete_user(public_id: str, current_user: PublicUser = Depends(get_current_user)):
     
     if current_user.public_id != public_id:
+        send_log(
+            log_type="WARNING",
+            module="UserModule",
+            summary="Intento de eliminación no autorizado",
+            description=f"El usuario {current_user.username} intentó eliminar a {public_id} sin permisos."
+        )
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=ErrorResponse(
@@ -124,7 +176,20 @@ async def delete_user(public_id: str, current_user: PublicUser = Depends(get_cur
 
     delete_result = await user_collection.delete_one({"public_id": public_id})
     if delete_result.deleted_count == 1:
+        send_log(
+            log_type="INFO",
+            module="UserModule",
+            summary="Usuario eliminado",
+            description=f"El usuario con ID {public_id} fue eliminado por {current_user.username}."
+        )
         return
+    
+    send_log(
+        log_type="WARNING",
+        module="UserModule",
+        summary="Intento de eliminación fallido",
+        description=f"El usuario con ID {public_id} no fue encontrado para eliminar."
+    )
     raise HTTPException(
         status_code=404,
         detail=ErrorResponse(

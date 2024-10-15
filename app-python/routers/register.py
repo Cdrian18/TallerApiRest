@@ -5,6 +5,7 @@ from utils.database import user_collection, user_helper
 import bcrypt
 import uuid
 from datetime import datetime, timezone
+from utils.logs import send_log
 
 router = APIRouter()
 
@@ -22,6 +23,12 @@ async def create_user(user: User):
     try:
         # Verificar si el usuario ya existe
         if (await user_collection.find_one({"email": user.email}) or await user_collection.find_one({"username": user.username})):
+            send_log(
+                log_type="WARNING",
+                module="UserModule",
+                summary="Intento de registro fallido",
+                description=f"El usuario con correo {user.email} o el nombre de usuario {user.username} ya existe."
+            )
             raise HTTPException(status_code=409, detail="El usuario con este correo ya existe")
 
         # Convertir el modelo a un diccionario
@@ -43,11 +50,30 @@ async def create_user(user: User):
         # Obtener el usuario recién creado
         created_user = await user_collection.find_one({"_id": new_user.inserted_id})
         
+        send_log(
+            log_type="INFO",
+            module="UserModule",
+            summary="Usuario registrado exitosamente",
+            description=f"El usuario {created_user['username']} ha sido registrado exitosamente."
+        )
+        
         return user_helper(created_user)
     
     except HTTPException as e:
+        send_log(
+            log_type="ERROR",
+            module="UserModule",
+            summary="Error al registrar el usuario",
+            description=f"Error durante el registro del usuario: {e}"
+        )
         raise e  # Ya está manejado correctamente con el esquema de error
 
     except Exception as e:
         # Capturar cualquier otro error inesperado
+        send_log(
+            log_type="ERROR",
+            module="UserModule",
+            summary="Error al registrar el usuario",
+            description=f"Error durante el registro del usuario: {e}"
+        )
         raise HTTPException(status_code=500, detail="Error interno del servidor")

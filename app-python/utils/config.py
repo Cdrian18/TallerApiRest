@@ -8,6 +8,7 @@ load_dotenv()
 MONGO_DETAILS = os.getenv("MONGO_DETAILS")
 SECRET_KEY = os.getenv("SECRET_KEY")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
+LOGS_API_URL = os.getenv("LOGS_API_URL")
 
 # config.py
 SMTP_HOST = "smtp.gmail.com"
