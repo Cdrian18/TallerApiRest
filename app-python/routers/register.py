@@ -5,7 +5,7 @@ from utils.database import user_collection, user_helper
 import bcrypt
 import uuid
 from datetime import datetime, timezone
-from utils.logs import send_log
+from utils.rabbitmq_producer import send_log
 
 router = APIRouter()
 

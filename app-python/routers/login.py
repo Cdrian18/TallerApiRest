@@ -5,7 +5,7 @@ from datetime import timedelta
 from utils.database import user_collection
 from schemas.user import LoginRequest
 from schemas.error import ErrorResponse
-from utils.logs import send_log
+from utils.rabbitmq_producer import send_log
 
 router = APIRouter()
 

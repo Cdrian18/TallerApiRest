@@ -4,7 +4,7 @@ from utils.database import user_collection
 from utils.email import send_email
 from schemas.user import RecoverRequest
 import bcrypt
-from utils.logs import send_log
+from utils.rabbitmq_producer import send_log
 
 router = APIRouter()
 

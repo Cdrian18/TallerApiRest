@@ -6,7 +6,7 @@ from utils.auth import get_current_user
 from schemas.user import User, PublicUser
 from schemas.error import ErrorResponse
 from utils.database import user_collection, user_helper
-from utils.logs import send_log
+from utils.rabbitmq_producer import send_log
 
 router = APIRouter()
 
